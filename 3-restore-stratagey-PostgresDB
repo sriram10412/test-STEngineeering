@@ -1,0 +1,54 @@
+A point of time recovery for DB is a keyword in the backup strategies which defines how soon we can recover the data and make it accessible in the case of DB failures.
+To make the data accessible at any point of time we need to take as many backups as possible to avoid the data loss  and integrity of the data.
+This meaning the data will be backed up in such a way which is as up-to-the-moment as possible.As i am currently working in a Banking Firm,the databackups are very critical to us.
+Below is the backup strategy we are using for the DBs .
+
+Backup and Restore Strategy:
+
+Full Database Backup:
+Frequency: Weekly (Usually happens on the weekend as data is huge)
+A full backup of the entire database is taken to capture the entire state of the database.
+
+Incremental or Differential Backups:
+Frequency: Daily (occurs  during non business hours )
+Optionally, incremental or differential backups can be taken to reduce backup size and duration.
+
+Transaction Log Backups:
+Frequency: Every 15 minutes
+Transaction log backups are taken at regular intervals to capture changes since the last backup.
+
+Example Timeline:
+
+Day 1:
+Full database backup taken on Sunday at midnight.
+Transaction log backups taken every 15 minutes throughout the day.
+
+Day 2:
+
+Incremental or differential backup taken on Monday at midnight.
+Transaction log backups taken every 15 minutes throughout the day.
+
+Day 3 (Failure Occurs):
+
+A failure occurs, and data is lost.
+Restore starts by using the latest full backup from Day 2 and applying transaction log backups.
+
+Restore Process:
+
+Restore Full Backup:
+
+Restore the latest full backup from Day 2 to the database server.
+The database is now in the state it was in at the time of the full backup.
+
+Apply Transaction Log Backups:
+
+Apply transaction log backups from the point of the last full backup up to the desired point in time.
+For example, if the failure occurred at 2:30 PM on Day 3, apply transaction log backups until 2:15 PM.
+
+Database Recovery:
+
+The database is now recovered to the desired point in time.
+
+During the above restore process, there are few things which needs to be consider.
+1. There should not be any mistake during the backup process.
+2. Do regular checkings should be done on the backup process, to ensure all backups are happening correctly.
