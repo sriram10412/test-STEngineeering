@@ -1,0 +1,56 @@
+The ansible playbook for the installation of prometheus node exporter is as below.
+
+install_node_exporter.yml
+=========================================================================================================================================================================================
+---
+- name: Install Prometheus Node Exporter
+  hosts: your_target_group
+  become: true
+  vars:
+    node_exporter_version: "{{ver}}"
+    node_exporter_user: "{{user}}"
+    node_exporter_password: "{{password}}"
+
+  tasks:
+    - name: Update apt package cache
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name:
+          - wget
+          - curl
+
+    - name: Download and install Prometheus Node Exporter
+      shell: |
+        wget https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
+        tar -xzf node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
+        mv node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter /usr/local/bin/
+        rm -rf node_exporter-{{ node_exporter_version }}.linux-amd64*
+      args:
+        executable: /bin/bash
+
+    - name: Create Node Exporter systemd service
+      systemd:
+        name: node_exporter
+        enabled: yes
+        state: started
+      notify: restart node_exporter
+
+    - name: Set up basic authentication
+      lineinfile:
+        path: /lib/systemd/system/node_exporter.service
+        line: "Environment=\"ARGS=--web.route-prefix=/ --web.listen-address=127.0.0.1:9100 --web.telemetry-path=/metrics --http.auth.basic={{ node_exporter_user }}:{{ node_exporter_password }}\""
+      notify: restart node_exporter
+
+  handlers:
+    - name: restart node_exporter
+      systemd:
+        name: node_exporter
+        state: restarted
+=========================================================================================================================================================================================
+
+The playbook can be executed by passing 3 vars as the extra variables which makes the script more dynamic .
+
+ansible-playbook -i inventories/my-inv.yml playbooks/install_node_exporter -e "ver=2.1.0 user=sriram password=testthis"
