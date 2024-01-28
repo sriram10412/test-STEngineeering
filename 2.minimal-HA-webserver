@@ -1,0 +1,55 @@
+The High availability of a  webserver represents the appication should be accessible at any point even in the case of infra failures.
+To achieve this , we can include multiple components in the designing of the web server like Load balancing, and a proper Disaster recovery mechanisms to takcle the failure by smooth failovers.
+The below are the architecture components involved in the design of HA web application.
+------------------------------------------------
+Architecture Components:
+------------------------------------------------
+Web Servers:
+Multiple web server instances hosting the web application.Configured identically to enable seamless failover.
+Requests are spread across these servers by the load balancer.
+
+DB servers:
+For dynamic web applications, a database server is often included.Ensures data consistency across multiple instances.Might use database replication for high availability.
+
+Load Balancer:
+The load balancer distributes incoming traffic across multiple web server instances.Ensures even distribution of requests to prevent overloading any single server.
+In the event of a failure, the load balancer redirects traffic to healthy servers.
+
+Storage and File Replication:
+Shared storage for static files or assets.Replicate files across multiple servers for redundancy.
+
+Monitoring System:
+Continuous monitoring of server health and performance.Alerts configured to notify administrators of potential issues.
+
+Autoscaling:
+Auto-scaling mechanisms to dynamically adjust resources based on demand.Can add or remove instances based on predefined conditions.
+
+------------------------------------------------
+Mechanisms for Handling Infrastructure Failures:
+------------------------------------------------
+Load Balancer Health Checks:
+Regularly checks the health of individual servers.If a server fails the health check, it is temporarily taken out of the load balancing rotation.
+
+Database Replication:
+For databases, replication ensures data consistency and availability.A standby database can take over in case of the primary database failure.
+
+File Replication:
+Replicating static files across servers ensures availability even if one server goes down.
+
+Disaster Recovery Plan:
+A comprehensive plan outlining procedures to recover from major outages.Includes steps for restoring services, data, and configurations.
+
+Server Redundancy:
+Multiple web server instances provide redundancy.If one server fails, the load balancer directs traffic to the healthy servers.
+
+Regular Testing:
+Regularly test the failover mechanisms and disaster recovery procedures.Ensure that the system behaves as expected during simulated failures.
+
+Data Backups:
+Regularly scheduled data backups to prevent data loss in case of a catastrophic failure.Backups can be stored in a separate, resilient location.
+
+Automated Failover:
+Automated failover mechanisms detect failures and initiate corrective actions.For example, a failed web server can trigger the load balancer to reroute traffic to healthy servers.
+
+These are the things which i take care during the designing of a HA architechture of an Application. This may not be 100 % acccurate, as there are still some chance of downtime due to the 
+failure of any protection measure. These are the steps helps to minimize the downtime of an application.

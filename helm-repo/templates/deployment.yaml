@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helm-repo.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "helm-repo.name" . }}
+    helm.sh/chart: {{ include "helm-repo.chart" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "helm-repo.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "helm-repo.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - name: http
+              containerPort: 80
+            {{- if .Values.nginx.httpsEnabled }}
+            - name: https
+              containerPort: 443
+            {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "helm-repo.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "helm-repo.name" . }}
+    helm.sh/chart: {{ include "helm-repo.chart" . }}
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      nodePort: {{ .Values.nginx.nodePort }}
+    {{- if .Values.nginx.httpsEnabled }}
+    - name: https
+      port: 443
+      targetPort: 443
+    {{- end }}
+  selector:
+    app.kubernetes.io/name: {{ include "helm-repo.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
